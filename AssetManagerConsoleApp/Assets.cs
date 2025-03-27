@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AssetManagerConsoleApp
+﻿namespace AssetManagerConsoleApp
 {
     // Main Class AssetManagerConsoleApp
-    class Assets
+    public class Assets
     {
         public string Office { get; set; } = string.Empty;
         public string AssetTag { get; set; } = string.Empty;

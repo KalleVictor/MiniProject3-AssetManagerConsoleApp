@@ -1,6 +1,4 @@
-﻿using AssetManagerConsoleApp;
-
-namespace AssetManagerConsoleApp
+﻿namespace AssetManagerConsoleApp
 {
     internal class Program
     {
@@ -33,222 +31,8 @@ namespace AssetManagerConsoleApp
                 Console.ReadLine();
             }
 
+            //Table appearance - Header
 
-            static void MainMenu(List<Assets> assets)
-            {
-                Console.WriteLine("Press (1) to add an asset, Sort the list by (2) Purchase Date, (3) Office or (4) by Class. Press (Q) to Exit the app.");
-                string? option = Console.ReadLine();
-                if (option == "1")
-                {
-                    AddAsset(assets);
-                    MainMenu(assets);
-                }
-                else if (option == "2")
-                {
-                    MainHeader();
-                    DisplayAssetsByPurchaseDate(assets);
-                    MainMenu(assets);
-                }
-                else if (option == "3")
-                {
-                    MainHeader();
-                    DisplayAssetsByOffice(assets);
-                    MainFooter();
-                    MainMenu(assets);
-                }
-                else if (option == "4")
-                {
-                    MainHeader();
-                    DisplayAssetsByClass(assets);
-                    MainFooter();
-                    MainMenu(assets);
-                }
-                else if (option == "Q")
-                {
-                    Console.WriteLine("Exiting the app...");
-                    Environment.Exit(0);
-                }
-                else
-                {
-                    Console.WriteLine("Invalid option.");
-                    MainMenu(assets);
-                }
-
-
-            }
-
-            //Function to add an asset to the list
-            static void AddAsset(List<Assets> assets)
-            {
-                Console.Write("Enter the type of asset; 1.Computer or 2.Smartphone: ");
-                string? assetType = Console.ReadLine();
-                if (assetType == "1")
-                {
-                    assetType = "Computer";
-                }
-                else if (assetType == "2")
-                {
-                    assetType = "Smartphone";
-                }
-                else if (assetType != "1" || assetType != "2")
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid asset type. Please choose one of the two assets.");
-                    Console.ResetColor();
-                    return;
-                }
-
-                Console.Write("Enter the office location: 1.USA 2.Spain 3.Sweden ");
-                string? office = Console.ReadLine();
-                if (office == "1")
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("USA selected.");
-                    Console.ResetColor();
-                    office = "USA";
-                }
-                else if (office == "2")
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Spain selected.");
-                    Console.ResetColor();
-                    office = "Spain";
-                }
-                else if (office == "3")
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Sweden selected.");
-                    Console.ResetColor();
-                    office = "Sweden";
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid office location. Please choose one of the three locations available.");
-                    Console.ResetColor();
-                    return;
-                }
-
-                // **Step 1: Assign Currency Based on Office Location**
-                Dictionary<string, string> officeToCurrency = new()
-        {
-            { "sweden", "SEK" },
-            { "usa", "USD" },
-            { "spain", "EUR" },
-        };
-                string? currency;
-                if (officeToCurrency.TryGetValue(office, out string? foundCurrency))
-                {
-                    currency = foundCurrency;
-                }
-                else
-                {
-                    currency = "EUR"; // Default to EUR
-                }
-
-                Console.Write("Enter the brand: ");
-                string? brand = Console.ReadLine();
-                if (string.IsNullOrEmpty(brand))
-                {
-                    brand = "Missing";
-                }
-
-                Console.Write("Enter the model: ");
-                string? model = Console.ReadLine();
-                if (string.IsNullOrEmpty(model))
-                {
-                    model = "Missing";
-                }
-
-                Console.Write("Enter the price (USD): ");
-                string? priceInput = Console.ReadLine();
-                if (!decimal.TryParse(priceInput, out decimal price))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid price. Please enter a valid number.");
-                    Console.ResetColor();
-                    return;
-                }
-
-
-                // **Step 2: Convert Price to Local Currency** using the LiveCurrency Class
-                // Exchange rates from USD to EUR and SEK from
-                LiveCurrency.FetchRates();
-                Dictionary<string, decimal> currencyToExchangeRate = new()
-            {
-                { "SEK", (decimal)LiveCurrency.Convert(1, "USD", "SEK") },
-                { "USD", 1 },
-                { "EUR", (decimal)LiveCurrency.Convert(1, "USD", "SEK") }
-            };
-
-                decimal localPrice = price * currencyToExchangeRate[currency];
-
-                if (price <= 0 || localPrice <= 0)  // Ensure price and local price are positive
-                {
-                    Console.WriteLine("Invalid input. Price and local price must be positive.");
-                    return;
-                }
-
-                // Enter Date of Purchase, for functionally purposes, enter "T" or "t" if the date is today
-                Console.Write("Enter the purchase date (YYYY-MM-DD), if today enter (T): ");
-                string? purchaseToday = Console.ReadLine()?.Trim();
-
-                DateTime purchaseDate;
-
-                if (!string.IsNullOrEmpty(purchaseToday) && purchaseToday.Equals("T", StringComparison.OrdinalIgnoreCase))
-                {
-                    purchaseDate = DateTime.Today; // Assign today's date
-                }
-                else if (!DateTime.TryParseExact(purchaseToday, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out purchaseDate))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid date! Please enter the date in yyyy-MM-dd format or 'T' for today.");
-                    Console.ResetColor();
-                    return;
-                }
-
-                // Validate that the date is not in the future and not before 2000
-                if (purchaseDate > DateTime.Today)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid input. Purchase date cannot be in the future.");
-                    Console.ResetColor();
-                    return;
-                }
-                else if (purchaseDate < new DateTime(2000, 1, 1))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid input. Purchase date cannot be before the year 2000.");
-                    Console.ResetColor();
-                    return;
-                }
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($" Purchase Date Set: {purchaseDate:yyyy-MM-dd}");
-                Console.ResetColor();
-
-                if (assetType == "Computer")
-                {
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Computer added as an asset!");
-                    Console.ResetColor();
-                    assets.Add(new Computer(brand, model, office, purchaseDate, price, currency, localPrice));
-                    return;
-                }
-                else if (assetType == "Smartphone")
-                {
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Smartphone added as an asset!");
-                    Console.ResetColor();
-                    assets.Add(new Smartphone(brand, model, office, purchaseDate, price, currency, localPrice));
-                    return;
-                }
-            }
-
-
-            //Header for the table
             static void MainHeader()
             {
                 Console.BackgroundColor = ConsoleColor.White;
@@ -272,7 +56,8 @@ namespace AssetManagerConsoleApp
                 Console.ForegroundColor = ConsoleColor.Black;
             }
 
-            //List all assets   
+            //Function to display all assets
+
             static void DisplayAssets(List<Assets> assets)
             {
                 TableColor();
@@ -292,6 +77,61 @@ namespace AssetManagerConsoleApp
                     );
                 }
                 Console.ResetColor();
+            }
+
+            //Table Appearance - Footer
+            //For additional functions, such as include the total amount of assets and the total cost of all assets
+            static void MainFooter()
+            {
+
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Blue;
+                //Present to total amount of assets 
+
+                Console.ResetColor();
+            }
+
+            //Main menu function
+
+            static void MainMenu(List<Assets> assets)
+            {
+                Console.WriteLine("Press (1) to add an asset, Sort the list by (2) Purchase Date, (3) Office or (4) by Class. Press (Q) to Exit the app.");
+                string? option = Console.ReadLine();
+                if (option == "1")
+                {
+                    AssetManager.AddAsset(assets);
+                    MainMenu(assets);
+                }
+                else if (option == "2")
+                {
+                    MainHeader();
+                    DisplayAssetsByPurchaseDate(assets);
+                    MainMenu(assets);
+                }
+                else if (option == "3")
+                {
+                    MainHeader();
+                    DisplayAssetsByOffice(assets);
+                    MainFooter();
+                    MainMenu(assets);
+                }
+                else if (option == "4")
+                {
+                    MainHeader();
+                    DisplayAssetsByClass(assets);
+                    MainFooter();
+                    MainMenu(assets);
+                }
+                else if (option != null && option.Equals("Q", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Exiting the app...");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid option.");
+                    MainMenu(assets);
+                }
             }
 
             //List all assets sorted by Office
@@ -387,18 +227,6 @@ namespace AssetManagerConsoleApp
                     Console.ForegroundColor = ConsoleColor.Black;
                 }
             }
-            //Footer for the table
-            static void MainFooter()
-            {
-
-                Console.BackgroundColor = ConsoleColor.White;
-                Console.ForegroundColor = ConsoleColor.Blue;
-                //Present to total amount of assets 
-
-                Console.ResetColor();
-            }
         }
     }
 }
-
-
