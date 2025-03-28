@@ -10,8 +10,8 @@ namespace AssetManagerConsoleApp
         {
             Console.WriteLine("Welcome to Asset Manager Console App");
             List<Assets> assets = new List<Assets>();
-            AddSampleAssets(assets);
-            AddSampleAsset2(assets);
+            DataSamples.AddSampleAssets(assets);
+            DataSamples.AddSampleAssets2(assets);
             while (true)
             {
                 //Use MainHeader function to display header 
@@ -22,35 +22,6 @@ namespace AssetManagerConsoleApp
                 MainMenu(assets);
                 Console.ReadLine();
             }
-        }
-
-        //Function to add sample assets to the list
-        public static void AddSampleAssets(List<Assets> assets)
-        {
-            assets.Add(new Computer("Dell", "Latitude", "USA", new DateTime(2024, 1, 1), 1000, "USD", 1000));
-            assets.Add(new Computer("HP", "Elitebook", "Spain", new DateTime(2023, 2, 1), 900, "EUR", 765));
-            assets.Add(new Computer("Lenovo", "ThinkPad", "Sweden", new DateTime(2022, 3, 1), 800, "SEK", 800));
-            assets.Add(new Smartphone("Apple", "iPhone", "USA", new DateTime(2024, 4, 1), 1200, "USD", 1200));
-            assets.Add(new Smartphone("Samsung", "Galaxy", "Spain", new DateTime(2023, 5, 1), 1100, "EUR", 935));
-            assets.Add(new Smartphone("OnePlus", "8T", "Sweden", new DateTime(2023, 6, 1), 1000, "SEK", 1000));
-        }
-
-        //Add more sample assets to the list using a different method
-        public static void AddSampleAsset2(List<Assets> assets)
-        {
-            List<Assets> sampleAssets = new()
-            {
-                new Smartphone("Apple", "iPhone 11", "Spain", new DateTime(2021, 12, 29), 970, "EUR", 801.65m),
-                new Computer("HP", "Elitebook 2", "Spain", new DateTime(2024, 6, 1), 1423, "EUR", 1176.03m),
-                new Smartphone("Apple", "iPhone 11", "Spain", new DateTime(2023, 9, 25), 990, "EUR", 818.18m),
-                new Smartphone("Apple", "iPhone X", "Sweden", new DateTime(2024, 7, 15), 1245, "SEK", 10375),
-                new Smartphone("Motorola", "Razr", "Sweden", new DateTime(2024, 3, 16), 970, "SEK", 8083.33m),
-                new Computer("HP", "Elitebook 2", "Sweden", new DateTime(2023, 10, 2), 588, "SEK", 4900),
-                new Computer("ASUS", "W234", "USA", new DateTime(2022, 2, 21), 1200, "USD", 1200),
-                new Computer("Lenovo", "Yoga 730", "USA", new DateTime(2022, 8, 28), 835, "USD", 835),
-                new Computer("Lenovo", "Yoga 530", "USA", new DateTime(2019, 5, 21), 1030, "USD", 1030),
-            };
-            assets.AddRange(sampleAssets);
         }
 
         //Table appearance - Header
@@ -76,8 +47,7 @@ namespace AssetManagerConsoleApp
             Console.ForegroundColor = ConsoleColor.Black;
         }
 
-        //Table appearance - Footer
-        //For additional functions, such as include the total amount of assets and the total cost of all assets
+        //Table appearance - Footer - For additional functions, such as include the total amount of assets and the total cost of all assets - Not used at the moment
         public static void MainFooter()
         {
 
@@ -125,8 +95,7 @@ namespace AssetManagerConsoleApp
             }
         }
         
-        //Function to display all assets
-        //Generic function to display all assets
+        //Function to display all assets and sort. 
 
         public static void DisplayAssets(List<Assets> assets, Func<Assets, object>? orderBy = null, string title = "All Assets")
         {
@@ -200,15 +169,7 @@ namespace AssetManagerConsoleApp
             Console.Write("Enter the office location: 1.USA 2.Spain 3.Sweden ");
             string? office = Console.ReadLine();
 
-            // Dictionary to map user input to office names and currencies
-            Dictionary<string, (string OfficeName, string Currency)> officeData = new()
-            {
-                { "1", ("USA", "USD") },
-                { "2", ("Spain", "EUR") },
-                { "3", ("Sweden", "SEK") },
-            };
-
-            if (officeData.TryGetValue(office ?? "", out var officeInfo))
+            if (OfficeClass.officeData.TryGetValue(office ?? "", out var officeInfo))
             {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"{officeInfo.OfficeName} selected. Local Currency set to {officeInfo.Currency}.");
