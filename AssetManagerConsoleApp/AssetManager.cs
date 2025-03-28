@@ -1,6 +1,8 @@
-﻿namespace AssetManagerConsoleApp
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace AssetManagerConsoleApp
 {
-    public class AssetManager
+    internal class AssetManager
     {
 
         //Function to start the Asset Manager Console App
@@ -81,8 +83,7 @@
 
             Console.BackgroundColor = ConsoleColor.White;
             Console.ForegroundColor = ConsoleColor.Blue;
-            //Present to total amount of assets 
-
+            //Present total amount etc. 
             Console.ResetColor();
         }
         public static void MainMenu(List<Assets> assets)
@@ -96,21 +97,19 @@
             }
             else if (option == "2")
             {
-                MainHeader();
-                DisplayAssetsByPurchaseDate(assets);
+                DisplayAssets(assets, x => x.PurchaseDate, "Purchase Date");
+                MainFooter();
                 MainMenu(assets);
             }
             else if (option == "3")
             {
-                MainHeader();
-                DisplayAssetsByOffice(assets);
+                DisplayAssets(assets, x => x.Office, "Office (Country)");
                 MainFooter();
                 MainMenu(assets);
             }
             else if (option == "4")
             {
-                MainHeader();
-                DisplayAssetsByClass(assets);
+                DisplayAssets(assets, x => x.AssetTag, "Class");
                 MainFooter();
                 MainMenu(assets);
             }
@@ -125,64 +124,20 @@
                 MainMenu(assets);
             }
         }
+        
         //Function to display all assets
         //Generic function to display all assets
 
-        public static void DisplayAssets(List<Assets> assets)
+        public static void DisplayAssets(List<Assets> assets, Func<Assets, object>? orderBy = null, string title = "All Assets")
         {
+            Console.Clear();
+            Console.WriteLine($"Assets sorted by {title}");
+            MainHeader();
             TableColor();
-            // Get current date
 
-            foreach (var asset in assets)
-            {
-                AgeOfAsset(asset);
-                Console.WriteLine(
-                    asset.Office.PadRight(15) +
-                    asset.AssetTag.PadRight(20) +
-                    asset.Brand.PadRight(10) +
-                    asset.Model.PadRight(15) +
-                    asset.Price.ToString("F2").PadRight(15) +  //Ensure two decimal places 
-                    asset.Currency + " " + asset.LocalPrice.ToString("F2").PadRight(15) +
-                    asset.PurchaseDate.ToString("yyyy-MM-dd") + " ".PadRight(13)
-                );
-            }
-            Console.ResetColor();
-        }
-        //List all assets sorted by Office
-        public static void DisplayAssetsByOffice(List<Assets> assets)
-        {
-            Console.Clear();
-            Console.WriteLine("Assets sorted by Office (Country)");
-            MainHeader();
-            TableColor();
-            // Get current date
-            DateTime currentDate = DateTime.Now;
-            foreach (var asset in assets.OrderBy(x => x.Office))
-            {
-                AgeOfAsset(asset);
-                Console.WriteLine(
-                    asset.Office.PadRight(15) +
-                    asset.AssetTag.PadRight(20) +
-                    asset.Brand.PadRight(10) +
-                    asset.Model.PadRight(15) +
-                    asset.Price.ToString("F2").PadRight(15) +  //Ensure two decimal places 
-                    asset.Currency + " " + asset.LocalPrice.ToString("F2").PadRight(15) +
-                    asset.PurchaseDate.ToString("yyyy-MM-dd") + " ".PadRight(13)
-                );
-            }
-            Console.ResetColor();
-        }
+            var sortedAssets = orderBy != null ? assets.OrderBy(orderBy).ToList() : assets;
 
-        //List all assets sorted by Purchase Date
-        public static void DisplayAssetsByPurchaseDate(List<Assets> assets)
-        {
-            Console.Clear();
-            Console.WriteLine("Assets sorted by Purchase Date");
-            MainHeader();
-            TableColor();
-            // Get current date
-            DateTime currentDate = DateTime.Now;
-            foreach (var asset in assets.OrderBy(x => x.PurchaseDate))
+            foreach (var asset in sortedAssets)
             {
                 AgeOfAsset(asset);
                 Console.WriteLine(
@@ -190,33 +145,12 @@
                     asset.AssetTag.PadRight(20) +
                     asset.Brand.PadRight(10) +
                     asset.Model.PadRight(15) +
-                    asset.Price.ToString("F2").PadRight(15) +  //Ensure two decimal places 
+                    asset.Price.ToString("F2").PadRight(15) +  // Ensure two decimal places 
                     asset.Currency + " " + asset.LocalPrice.ToString("F2").PadRight(15) +
                     asset.PurchaseDate.ToString("yyyy-MM-dd") + " ".PadRight(13)
                 );
             }
-            Console.ResetColor();
-        }
-        //List all assets sorted by class
-        public static void DisplayAssetsByClass(List<Assets> assets)
-        {
-            Console.Clear();
-            Console.WriteLine("Assets sorted by Class.");
-            MainHeader();
-            TableColor();
-            foreach (var asset in assets.OrderBy(x => x.AssetTag))
-            {
-                AgeOfAsset(asset);
-                Console.WriteLine(
-                    asset.Office.PadRight(15) +
-                    asset.AssetTag.PadRight(20) +
-                    asset.Brand.PadRight(10) +
-                    asset.Model.PadRight(15) +
-                    asset.Price.ToString("F2").PadRight(15) +  //Ensure two decimal places 
-                    asset.Currency + " " + asset.LocalPrice.ToString("F2").PadRight(15) +
-                    asset.PurchaseDate.ToString("yyyy-MM-dd") + " ".PadRight(13)
-                );
-            }
+    
             Console.ResetColor();
         }
 
@@ -242,6 +176,7 @@
             }
         }
 
+        //Function to add a new asset
         public static void AddAsset(List<Assets> assets)
         {
             Console.Write("Enter the type of asset; 1.Computer or 2.Smartphone: ");
@@ -368,12 +303,11 @@
             }
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($" Purchase Date Set: {purchaseDate:yyyy-MM-dd}");
+            Console.WriteLine($"Purchase Date Set: {purchaseDate:yyyy-MM-dd}");
             Console.ResetColor();
 
             if (assetType == "Computer")
             {
-                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("Computer added as an asset!");
                 Console.ResetColor();
@@ -382,7 +316,6 @@
             }
             else if (assetType == "Smartphone")
             {
-                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("Smartphone added as an asset!");
                 Console.ResetColor();
