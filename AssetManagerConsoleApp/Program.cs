@@ -4,4 +4,3 @@ while (true)
 {
     AssetManager.Start();
 }
-
