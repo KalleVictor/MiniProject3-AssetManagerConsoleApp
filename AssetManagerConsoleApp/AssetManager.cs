@@ -9,7 +9,7 @@ namespace AssetManagerConsoleApp
         static public void Start()
         {
             Console.WriteLine("Welcome to Asset Manager Console App");
-            List<Assets> assets = new List<Assets>();
+            var assets = new List<Assets>();
             DataSamples.AddSampleAssets(assets);
             DataSamples.AddSampleAssets2(assets);
             while (true)
@@ -214,7 +214,7 @@ namespace AssetManagerConsoleApp
             // **Step 2: Convert Price to Local Currency** using the LiveCurrency Class
             // Exchange rates from USD to EUR and SEK from
             LiveCurrency.FetchRates();
-            Dictionary<string, decimal> currencyToExchangeRate = new()
+            Dictionary<string, decimal> currencyToExchangeRate = new Dictionary<string, decimal>
                     {
                         { "SEK", (decimal)LiveCurrency.Convert(1, "USD", "SEK") },
                         { "USD", 1 },

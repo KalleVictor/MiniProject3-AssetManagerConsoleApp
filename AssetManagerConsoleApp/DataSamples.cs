@@ -29,13 +29,5 @@ namespace AssetManagerConsoleApp
             };
             assets.AddRange(sampleAssets);
         }
-        private static decimal GetLocalPrice(decimal price, string currency)
-        {
-            if (LiveCurrency.exchangeRates.TryGetValue(currency, out decimal rate))
-            {
-                return price * rate;
-            }
-            return price; // Fallback if currency not found
-        }
     }
 }
